@@ -13,12 +13,14 @@ def parse_data(filename):
     info = {
         'rows': rows,
         'columns': columns,
-        'rides': rides,
+        'nb_rides': int(rides),
         'nb_vehicles': vehicles,
         'bonus': bonus,
         'nb_steps': steps
     }
     rides = data[1:, :]
+    indices = np.arange(info['nb_rides']).reshape((info['nb_rides'], 1))
+    rides = np.hstack((indices, rides))
     return info, rides
 
 def main():
