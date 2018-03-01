@@ -52,15 +52,14 @@ def perform_simulation(info, rides, filename):
     for i in range(len(fleet)):
         availability_by_timestamps[0].append(fleet[i])
 
-    print(fleet[0])
-    print(availability_by_timestamps[0][0])
     for i in range(len(availability_by_timestamps)):
         available_vehicles = availability_by_timestamps[i]
 
         next_rides = sorted_rides.iloc[ride_cursor:ride_cursor + len(available_vehicles), :]
-        vehicles_to_distances = np.array(len(available_vehicles), len(available_vehicles))
+        vehicles_to_distances = np.zeros((len(available_vehicles), len(available_vehicles)))
         for idx_v, vehicle in enumerate(available_vehicles):
-            for idx_r, ride in enumerate(next_rides):
+            for idx_r in range(len(next_rides)):
+                ride = next_rides.iloc[idx_r,:]
                 vehicles_to_distances[idx_v, idx_r] = vehicle.dist_to_ride(ride)
 
         chosed_vehicles = set()
@@ -69,14 +68,16 @@ def perform_simulation(info, rides, filename):
             k = 0
             while k < len(next_vehicles) and next_vehicles[k] in chosed_vehicles:
                 k += 1
-            cur_vehicle = available_vehicles(next_vehicles[k])
-            ride = next_rides[j]
+            cur_vehicle = available_vehicles[next_vehicles[k]]
+            ride = next_rides.iloc[j,:]
             next_availability = assign_vehicle_to_ride(cur_vehicle, ride, i)
+            if next_availability > len(availability_by_timestamps):
+                continue
             availability_by_timestamps[next_availability].append(cur_vehicle)
             cur_vehicle.x = ride.end_x
             cur_vehicle.y = ride.end_y
             cur_vehicle.rides.append(ride.name)
-            cur_vehicle.add(next_vehicles[k])
+            chosed_vehicles.add(next_vehicles[k])
 
         ride_cursor += len(available_vehicles)
         """
