@@ -49,7 +49,11 @@ def perform_simulation(info, rides, filename):
     current_time = 0
     ride_cursor = 0
     # Initialisation
-    availability_by_timestamps[0] = fleet
+    for i in range(len(fleet)):
+        availability_by_timestamps[0].append(fleet[i])
+
+    print(fleet[0])
+    print(availability_by_timestamps[0][0])
     for i in range(len(availability_by_timestamps)):
         while len(availability_by_timestamps[i]) and ride_cursor < len(sorted_rides):
             cur_vehicle = availability_by_timestamps[i].pop()
@@ -61,16 +65,17 @@ def perform_simulation(info, rides, filename):
                 continue
             cur_vehicle.x = ride.end_x
             cur_vehicle.y = ride.end_y
-            cur_vehicle.rides.append(ride.name)
+            cur_vehicle.rides.append(ride.name-1)
             availability_by_timestamps[next_availability].append(cur_vehicle)
-
     generate_result(fleet, filename)
 
 def generate_result(fleet, filename):
     with open(filename, 'a') as f:
-        for vehicle, idx in enumerate(fleet):
-            print(vehicle.rides)
-            f.write(str([idx] + vehicle.rides))
+        for idx, vehicle in enumerate(fleet):
+            f.write(str(idx+1) + " ")
+            for i in range(len(vehicle.rides)):
+                f.write(str(vehicle.rides[i]) + " ")
+            f.write(str("\n"))
 
 
 def main():
