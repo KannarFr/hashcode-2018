@@ -65,14 +65,14 @@ def perform_simulation(info, rides, filename):
                 continue
             cur_vehicle.x = ride.end_x
             cur_vehicle.y = ride.end_y
-            cur_vehicle.rides.append(ride.name-1)
+            cur_vehicle.rides.append(ride.name)
             availability_by_timestamps[next_availability].append(cur_vehicle)
     generate_result(fleet, filename)
 
 def generate_result(fleet, filename):
     with open(filename, 'a') as f:
         for idx, vehicle in enumerate(fleet):
-            f.write(str(idx+1) + " ")
+            f.write(str(len(vehicle.rides)) + " ")
             for i in range(len(vehicle.rides)):
                 f.write(str(vehicle.rides[i]) + " ")
             f.write(str("\n"))
