@@ -38,10 +38,10 @@ def get_ride_distance(ride):
 def assign_vehicle_to_ride(vehicle, ride, current_timestamp):
     vehicle_to_ride = vehicle.dist_to_ride(ride)
     ride_distance = get_ride_distance(ride)
-    return int(current_timestamp + np.max(vehicle_to_ride, int(ride.min_start) - current_timestamp) + ride_distance)
+    return int(current_timestamp + max(vehicle_to_ride, int(ride.min_start) - current_timestamp) + ride_distance)
 
 
-def perform_simulation(info, rides):
+def perform_simulation(info, rides, filename):
     sorted_rides = rides.sort_values(['min_start', 'max_finish'])
     fleet = [Vehicle() for _ in range(int(info['nb_vehicles']))]
     availability_by_timestamps = [[] for _ in range(int(info['nb_steps']))]
@@ -63,20 +63,25 @@ def perform_simulation(info, rides):
             cur_vehicle.y = ride.end_y
             cur_vehicle.rides.append(ride.name)
             availability_by_timestamps[next_availability].append(cur_vehicle)
-            
+
+    generate_result(fleet, filename)
+
+def generate_result(fleet, filename):
+    with open(filename, 'a') as f:
+        for vehicle, idx in enumerate(fleet):
+            print(vehicle.rides)
+            f.write(str([idx] + vehicle.rides))
 
 
 def main():
     data_files = os.listdir(DATA_FOLDER)
-    """
     for filename in data_files:
         info, rides = parse_data(os.path.join(DATA_FOLDER, filename))
         print(info, rides.shape)
-        perform_simulation(info, rides)
-    """
-    info, rides = parse_data(os.path.join(DATA_FOLDER, "a_example.in"))
-    print(info, rides.shape)
-    perform_simulation(info, rides)
+        perform_simulation(info, rides, 'results/' + filename)
+    #info, rides = parse_data(os.path.join(DATA_FOLDER, "a_example.in"))
+    #print(info, rides.shape)
+    #perform_simulation(info, rides)
 
 
 
